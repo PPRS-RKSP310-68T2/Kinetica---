@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>เครื่องคำนวณฟิสิกส์พื้นฐาน</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:"Sarabun",sans-serif;
+background:linear-gradient(135deg,#f5f5f5,#ffe27a);
+}
+
+header{
+text-align:center;
+padding:40px;
+}
+
+header h1{
+margin:0;
+font-size:30px;
+}
+
+.welcome{
+margin-top:10px;
+color:#444;
+}
+
+nav{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+padding:20px;
+}
+
+nav button{
+padding:10px 16px;
+border:none;
+border-radius:8px;
+background:#222;
+color:white;
+cursor:pointer;
+}
+
+nav button:hover{
+background:#444;
+}
+
+.container{
+max-width:650px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.btn{
+background:#ffd000;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.btn:hover{
+background:#e6b800;
+}
+
+#error{
+color:red;
+margin-top:10px;
+}
+
+#result{
+font-weight:bold;
+margin-top:10px;
+}
+
+canvas{
+margin-top:20px;
+}
+
+.credit-bar{
+margin-top:40px;
+background:#e5e5e5;
+padding:20px 40px;
+line-height:1.6;
+font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>เครื่องคำนวณฟิสิกส์พื้นฐาน</h1>
+
+<div class="welcome">
+สวัสดีครับ 👋 ยินดีต้อนรับสู่เว็บไซต์ช่วยคำนวณฟิสิกส์  
+เลือกหัวข้อที่ต้องการ แล้วกรอกค่าที่ต้องการคำนวณได้เลย ✨
+</div>
+
+</header>
+
+<nav>
+
+<button onclick="เปิด('โพรเจกไทล์')">โพรเจกไทล์</button>
+<button onclick="เปิด('โมเมนตัม')">โมเมนตัม</button>
+<button onclick="เปิด('วงกลม')">การเคลื่อนที่แบบวงกลม</button>
+<button onclick="เปิด('โอห์ม')">กฎของโอห์ม</button>
+<button onclick="เปิด('เลนส์')">ทัศนศาสตร์</button>
+
+</nav>
+
+<div class="container">
+
+<h2 id="หัวข้อ">เลือกหัวข้อการคำนวณ</h2>
+
+<div id="ช่องกรอก"></div>
+
+<button class="btn" onclick="คำนวณ()">คำนวณ</button>
+
+<div id="error"></div>
+
+<div id="result"></div>
+
+<canvas id="graph"></canvas>
+
+</div>
+
+<div class="credit-bar">
+
+<h3>คณะผู้จัดทำ</h3>
+
+<p>
+นายพงษ์ฐกร ดอนลาดลี เลขที่ 9<br>
+นายพิชชากร หรพูล เลขที่ 10<br>
+นายรัชชานนท์ บรรจโรจน์ เลขที่ 15<br>
+นายศุภวิทย์ เสร็จสวัสดิ์ เลขที่ 16
+</p>
+
+<p>ชั้นมัธยมศึกษาปีที่ 3/10</p>
+
+<p>
+โรงเรียนร่องคำ<br>
+อำเภอร่องคำ จังหวัดกาฬสินธุ์
+</p>
+
+</div>
+
+<script>
+
+let เรื่อง=""
+let กราฟ
+
+function เปิด(ประเภท){
+
+เรื่อง=ประเภท
+
+document.getElementById("ช่องกรอก").innerHTML=""
+document.getElementById("result").innerText=""
+document.getElementById("error").innerText=""
+
+if(กราฟ){
+กราฟ.destroy()
+}
+
+let box=document.getElementById("ช่องกรอก")
+
+document.getElementById("หัวข้อ").innerText=ประเภท
+
+if(ประเภท=="โพรเจกไทล์"){
+
+box.innerHTML=`
+<label>ความเร็วต้น (m/s)</label>
+<input id="v">
+
+<label>มุมยิง (องศา)</label>
+<input id="angle">
+`
+
+}
+
+if(ประเภท=="โมเมนตัม"){
+
+box.innerHTML=`
+<label>มวล (kg)</label>
+<input id="m">
+
+<label>ความเร็ว (m/s)</label>
+<input id="v">
+`
+
+}
+
+if(ประเภท=="วงกลม"){
+
+box.innerHTML=`
+<label>ความเร็ว (m/s)</label>
+<input id="v">
+
+<label>รัศมี (m)</label>
+<input id="r">
+`
+
+}
+
+if(ประเภท=="โอห์ม"){
+
+box.innerHTML=`
+<label>แรงดันไฟฟ้า (V)</label>
+<input id="v">
+
+<label>กระแสไฟฟ้า (A)</label>
+<input id="i">
+`
+
+}
+
+if(ประเภท=="เลนส์"){
+
+box.innerHTML=`
+<label>ระยะวัตถุ (เมตร)</label>
+<input id="u">
+
+<label>ระยะภาพ (เมตร)</label>
+<input id="v">
+`
+
+}
+
+}
+
+function ตรวจสอบ(list){
+
+for(let v of list){
+
+if(v===""){
+แสดง("กรุณากรอกข้อมูลก่อนทำการคำนวณ")
+return false
+}
+
+if(isNaN(v)){
+แสดง("กรุณากรอกตัวเลขให้ถูกต้อง")
+return false
+}
+
+}
+
+return true
+
+}
+
+function แสดง(msg){
+document.getElementById("error").innerText=msg
+}
+
+function คำนวณ(){
+
+document.getElementById("error").innerText=""
+
+let result=""
+
+if(เรื่อง=="โมเมนตัม"){
+
+let m=document.getElementById("m").value
+let v=document.getElementById("v").value
+
+if(!ตรวจสอบ([m,v])) return
+
+let p=m*v
+
+result="ค่าโมเมนตัม = "+p.toFixed(2)+" kg·m/s"
+
+}
+
+if(เรื่อง=="โพรเจกไทล์"){
+
+let v=document.getElementById("v").value
+let angle=document.getElementById("angle").value
+
+if(!ตรวจสอบ([v,angle])) return
+
+let range=(v*v*Math.sin(2*angle*Math.PI/180))/9.8
+
+result="ระยะทางสูงสุด ≈ "+range.toFixed(2)+" เมตร"
+
+วาดกราฟ(v,angle)
+
+}
+
+if(เรื่อง=="วงกลม"){
+
+let v=document.getElementById("v").value
+let r=document.getElementById("r").value
+
+if(!ตรวจสอบ([v,r])) return
+
+let a=(v*v)/r
+
+result="ความเร่งสู่ศูนย์กลาง = "+a.toFixed(2)+" m/s²"
+
+}
+
+if(เรื่อง=="โอห์ม"){
+
+let v=document.getElementById("v").value
+let i=document.getElementById("i").value
+
+if(!ตรวจสอบ([v,i])) return
+
+let r=v/i
+
+result="ค่าความต้านทานไฟฟ้า = "+r.toFixed(2)+" Ω"
+
+}
+
+if(เรื่อง=="เลนส์"){
+
+let u=document.getElementById("u").value
+let v=document.getElementById("v").value
+
+if(!ตรวจสอบ([u,v])) return
+
+let f=1/(1/u+1/v)
+
+result="ความยาวโฟกัส = "+f.toFixed(2)+" เมตร"
+
+}
+
+document.getElementById("result").innerText=result
+
+}
+
+function วาดกราฟ(v,angle){
+
+let g=9.8
+let rad=angle*Math.PI/180
+
+let x=[]
+let y=[]
+
+for(let t=0;t<=5;t+=0.1){
+
+let sx=v*Math.cos(rad)*t
+let sy=v*Math.sin(rad)*t-0.5*g*t*t
+
+if(sy>=0){
+x.push(sx)
+y.push(sy)
+}
+
+}
+
+if(กราฟ){
+กราฟ.destroy()
+}
+
+กราฟ=new Chart(document.getElementById("graph"),{
+
+type:'line',
+
+data:{
+labels:x,
+datasets:[{
+label:"กราฟการเคลื่อนที่แบบโพรเจกไทล์",
+data:y
+}]
+}
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
